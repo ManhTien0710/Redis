@@ -61,3 +61,10 @@ redis-cli -c -h 172.16.10.1 -p 6379 -a 'passredis@'
 INFO
 cluster nodes
 ```
+# if cluster fail: on 3 server
+```bash 
+cd /var/lib/redis/
+rm -rf *
+
+redis-cli --cluster create 172.16.10.1:6379 172.16.10.2:6379 172.16.10.3:6379 172.16.10.1:8107 172.16.10.2:8107 172.16.10.3:8107 --cluster-replicas 1 -a 'passredis@'
+```
