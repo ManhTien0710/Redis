@@ -1,0 +1,8 @@
+{
+    redis_cluster_node_port: "6379",
+    requirepass: "basebs",
+    redis_cluster_master_host: "172.16.10.20",
+    masterauth: "basebs",
+    redis_cluster_sentinel_port: "26379"
+ }
+ 

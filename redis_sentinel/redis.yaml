@@ -1,0 +1,91 @@
+---
+- name: Install Redis master
+  hosts: master
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    - name: Install a list of packages master
+      yum:
+        name:
+        - epel-release
+        - http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+        state: latest
+
+    - name: Install redis node master
+      yum:
+        name: redis
+        enablerepo: remi
+        state: present
+
+    - name: Ensure Redis master Configuration
+      template:
+        src: "master_node.conf.j2"
+        dest: "/etc/redis/redis.conf"
+        owner: redis
+        group: redis
+        mode: '0755'
+      notify: Redis Restart master
+  handlers:
+    - name: Redis Restart master
+      service:
+        name: redis
+        state: restarted
+        enabled: yes
+
+- name: Install Redis slave
+  hosts: slave
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    - name: Install a list of packages node slave
+      yum:
+        name:
+        - epel-release
+        - http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+        state: latest
+
+    - name: Install redis node slave
+      yum:
+        name: redis
+        enablerepo: remi
+        state: present
+
+    - name: Ensure Redis slave Configuration
+      template:
+        src: "slave_node.conf.j2"
+        dest: "/etc/redis/redis.conf"
+        owner: redis
+        group: redis
+        mode: '0755'
+      notify: Redis Restart slave
+    
+  handlers:
+    - name: Redis Restart slave
+      service:
+        name: redis
+        state: restarted
+        enabled: yes
+
+- name: Install Redis-sentinel
+  hosts: all
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    - name: Ensure Redis sentinel Configuration
+      template:
+        src: "redis_sentinel.conf.j2"
+        dest: "/etc/redis/sentinel.conf"
+        owner: redis
+        group: redis
+        mode: '0755'
+      notify: Redis sentinel Restart
+  
+  handlers:
+    - name: Redis sentinel Restart 
+      service:
+        name: redis-sentinel
+        state: restarted
+        enabled: yes

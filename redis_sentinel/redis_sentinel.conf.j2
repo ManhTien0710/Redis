@@ -1,0 +1,20 @@
+protected-mode no
+port {{ redis_cluster_sentinel_port }}
+
+daemonize yes
+pidfile /var/run/redis-sentinel.pid
+logfile /var/log/redis/sentinel.log
+
+dir /tmp
+
+sentinel monitor mymaster {{ redis_cluster_master_host }} {{ redis_cluster_node_port }} 2
+sentinel down-after-milliseconds mymaster 30000
+acllog-max-len 128
+
+sentinel parallel-syncs mymaster 1
+sentinel failover-timeout mymaster 180000
+sentinel deny-scripts-reconfig yes
+SENTINEL resolve-hostnames no
+SENTINEL announce-hostnames no
+SENTINEL master-reboot-down-after-period mymaster 0
+sentinel auth-pass mymaster {{ masterauth }}
